@@ -388,3 +388,224 @@ numbering();
 
 
 
+
+// <<<< 배열 >>>>
+var member = ['puppy' , 'cat' , 'bird']
+console.log(member);
+
+
+// 배열의 효용
+// 함수는 여러인수를 받을수는 있지만 출력값은 하나라는 단점이있지만 배열을 이용하면 출력값을 늘릴수있다.
+function get_members() {
+    return ['puppy', 'cat', 'bird'];
+}
+var members = get_members();
+console.log(members[0]);
+console.log(members[1]);
+console.log(members[2]);
+
+
+function get_members() {
+    return ['puppy', 'cat', 'bird'];
+}
+var members = get_members();
+// console.log(members[0].toUpperCase());
+// console.log(members[1].toUpperCase());
+// console.log(members[2].toUpperCase());
+for(var i =0; i < members.length; i++) {
+    console.log(members[i].toUpperCase());
+}
+
+
+// 배열의 크기
+var a = ['1' , '2', '3', '4'];
+console.log(a.length);   // 4
+
+// 배열에 데이터 추가
+var li = ['a', 'b', 'c', 'd', 'e']
+li.push('f');
+console.log(li);
+
+// concat은 인자로 전달된 값을 추가하는 명령이다.(복수의 원소를 배열에 추가하는 방법)
+var li = ['a', 'b', 'c', 'd', 'e'];
+li = li.concat(['f', 'g']);
+console.log(li);
+
+// unshift를 이용하면 배열에 앞쪽에 데이터를 추가할 수 있다.
+var li = ['a', 'b', 'c', 'd', 'e'];
+li.unshift('z');
+console.log(li);
+
+// splice를 이용하여 첫번째 인수의 인덱스부터 두번째 인수의 크기만큼 삭제하고, 첫번째 인덱스의 자리부터 세번째인수를 추가한다.
+var a = ['a', 'b', 'c'];
+a.splice(1,1,'x','y');
+console.log(a);   // [ 'a', 'x', 'y', 'c' ]
+
+
+// < 배열의 제거와 정렬 >
+// 제거
+var li = ['a', 'b', 'c', 'd', 'e'];
+li.shift(); // 배열에 맨앞 제거
+console.log(li); // [ 'b', 'c', 'd', 'e' ]
+
+li.pop(); // 배열에 맨뒤 제거
+console.log(li); // [ 'b', 'c', 'd' ]
+
+
+// 정렬
+var li = ['c', 'e', 'a', 'b', 'd'];
+li.sort();
+console.log(li);  // [ 'a', 'b', 'c', 'd', 'e' ]
+
+
+
+
+// <<<< 객체 >>>>
+// 객체는 배열과 비슷한 특성을 가지고 있다 배열은 비슷한 특성을 가진것들을 담는 그릇과 같은 특성이 있는데 객체 또한 그러하다는 점에서 유사성이 있다.
+// 하지만 배열은 인덱스를 0,1,2,... 으로 하지만, 객체는 인덱스를 직접 지정할 수 있다는점에서 다른점이 있다. 따라서 인덱스로 문자를 사용하고 싶다면 객체를 사용해야 한다.
+
+var grades = {'egoing': 10, 'k8805': 6, 'sorialgi': 80};
+// 배열은 [] 이지만 객체는 {} 이다.
+// 위에 예제에서 egoing은 key가 되고, 10은 value가 된다. 
+
+console.log(grades)   // { egoing: 10, k8805: 6, sorialgi: 80 }
+
+// 객체를 만드는 다른 방법 1
+var grades = {};            // 비어있는 객체를 만든다.
+grades['egoing'] = 10;      // 인덱스값을 부여하고 10이라는 값을 지정한다.
+grades['k8805'] = 6;        
+grades['sorialgi'] = 80;
+
+// 객체를 만드는 다른 방법 2
+var grades = new Object();  // 방법 1에서 나오는 {} 과 new Object() 는 같은 의미이다.
+grades['egoing'] = 10;
+grades['k8805'] = 6;        
+grades['sorialgi'] = 80;
+
+// 객체에서 필요한 값을 가져오는 방법 1
+console.log(grades['sorialgi']);   // 80
+console.log(grades['egoing']);     // 10
+
+// 객체에서 필요한 값을 가져오는 방법 2
+console.log(grades.egoing);        // 10    
+
+// 인덱스가 문자열이기 때문에 아래와 같이 문자열을 합쳐서 호출할 수도 있다.
+console.log(grades['k88' + '05']);  // 6
+
+console.log(grades.'k88'+'05');   // SyntaxError: Unexpected string
+
+
+// < 객체와 반복문의 조우 >
+// 배열은 순서가 있지만, 객체는 순서가 없다. 대신 객체는 key 와 value 가 있다.
+var grades = {'egoing': 10, 'k8805': 6, 'sorialgi': 80};
+for(key in grades) {         // grades 객체의 key를 key라는 변수에 저장한다.
+    console.log("key : "+key+"   value : "+grades[key]);
+}
+
+
+// 이렇게 key가 아닌 다른값으로 key를 받을수도 있다.
+var grades = {'egoing': 10, 'k8805': 6, 'sorialgi': 80};
+for(var name in grades) {         // grades 객체의 key를 key라는 변수에 저장한다.
+    console.log("name : "+name+"   value : "+grades[name]);
+}
+
+// * for in 문은 배열에서도 사용할 수 있다.
+var arr = ['a','b','c'];
+for(var name in arr) {
+    console.log(name);   // 0 1 2
+}
+
+for(var name in arr) {
+    console.log(arr[name]);   // a b c
+}
+
+
+
+
+// < 객체지향 프로그래밍 >
+var grades = {
+    'list' : {'egoing' : 10, 'k8805' : 8, 'sorialgi': 80},
+    'show' : function() {
+        console.log("Hello World");
+    }
+}
+
+console.log(grades['list'])   // { egoing: 10, k8805: 8, sorialgi: 80 }
+console.log(grades['list']['egoing']);   // 10
+console.log(grades['show']());  // Hello World
+
+// this 키워드
+var grades = {
+    'list' : {'egoing' : 10, 'k8805' : 8, 'sorialgi': 80},
+    'show' : function() {
+        console.log(this.list);    // 여기서 this는 function을 가지고 있는 객체인 grades를 가리킨다.
+    }
+}
+console.log(grades['show']());    // { egoing: 10, k8805: 8, sorialgi: 80 }
+
+
+
+
+
+var grades = {
+    'list' : {'egoing' : 10, 'k8805' : 8, 'sorialgi': 80},
+    'show' : function() {
+        for(var name in this.list){
+            console.log(name, this.list[name]);         // , 을 이용하면 여러개의 인수를 받을 수 있다.
+        }
+    }
+}
+console.log(grades.show());       // console.log(grades['show']()); 과 같은 뜻이다.
+/*
+ egoing 10
+ k8805 8
+ sorialgi 80
+ */
+
+
+
+
+ // <<<< 모듈 >>>>
+ // 모듈을 사용하면 코드의 재활용성이 높아져 효율적인 작업이 가능해진다.
+ // 아래정도의 함수를 모듈화 시키는것은 의미가 없는 일이지만 실제로는 함수안에있는 코드가 매우길다고 생각하고 실습할것.
+ function welcome() {
+     return 'Hello World'
+ }
+ console.log(welcome());
+
+
+
+///// 웹브라우저 호스트 환경에서 javascript 모듈을 로드하는 방법
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script src="greeting.js"></script>   //src 라는 속성은 <script></script> 를 만나게 되면 greeting.js라는 파일을 <>이안에다가 집어넣는것과같은</> 효과가 있다.
+    </head>                                   // greeting.js 라는 파일을 만들어서 거기에다가 welcome() 함수의 정의부를 만들어 놓으면 console.leg(welcome()); 만 적어도 welcome()함수를 호출할 수 있다.
+    <body>
+        <script>
+        function welcome() {
+            return 'Hello World';
+        }
+         console.log(welcome());
+
+        </script>
+    </body>
+</html>
+
+
+// node.js 호스트 환경에서 모듈을 로드하는 방법은 웹브라우저 호스트와 다르다.
+
+
+// < 라이브러리 >
+// 모듈과 라이브러리는 비슷한 개념이다. 모듈이 프로그램을 구성하는 작은 부품으로서의 로직을 의미한다면 라이브러리는 자주 사용되는 로직을 재사용하기 편리하도록 잘 정리한 
+// 일련의 코드들의 집합을 의미한다고 할 수 있다. 프로그래밍의 세계에는 훌륭한 라이브러리가 많다. 좋은 라이브러리를 선택하고 잘 사용하는 것은 프로그래밍의 핵심이라고 할 수 있다.
+
+
+
+// <<<< UI 와 API >>>>]
+// UI = User Interface
+// API = Application programming interface
+
+
+
