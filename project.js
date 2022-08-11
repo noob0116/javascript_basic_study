@@ -609,3 +609,111 @@ console.log(grades.show());       // console.log(grades['show']()); 과 같은 �
 
 
 
+
+// <<<< 정규표현식(regular expression) >>>>
+// 문자열안에 특정한 문자가 있는지 없는지, 그 문자열을 다른 문자열로 치환해주는 기능을 제공하는 도구이다.
+// 정규표현식으로 흔히 하는일 3가지 
+/*
+1. 원하는 정보 추출
+2. 원하는 정보가 있는지 test
+3. 정보를 다른정보로 치환
+*/
+
+// 정규표현식이 필요한 예시
+생활코딩 : <a href="http://opentutorials.org/course/1">http://opentutorials.org/course/1</a>
+네이버 : <a href="http://naver.com">http://naver.com</a>
+// 만약 위의 코드에서 생활코딩과 네이버의 url을 링크로 표현하고 싶다면 직접 <a href></a> 태그를 이용해서 링크로 표현하는 방법이 있다.
+// 하지만 이렇게 링크로 표현해야할 사이트가 매우 많다면 일일히 직접 표현하는것은 쉽지않을것이다. 이럴때 한줄의 코드로 링크로 바꿔줄수있는것이 정규 표현식이다.
+
+
+// < 정규표현식 패턴 만들기 >
+// 1. 정규표현식 리터럴
+var pattern = /a/;  //   / + 찾고자 하는 문자 + /
+
+// 2. 정규표현식 객체 생성자
+var pattern = new RegExp('a');   // regular expression 의 약자. 괄호안에 문자를 찾고자 한다는 것을 의미
+
+
+
+// < 정규표현식 메소드 실행 >
+
+// exec 
+// 찾고자 하는 대상이 문자열에 있을때 그 값을 배열로 리턴하는 메서드 (정보 추출)
+var pattern = /a/;
+// pattern 에는 우리가 원하는 정보가 담겨져 있고 exec('') 에서 ''안에는 그 정보를 찾을 문자열을 입력한다.
+console.log(pattern.exec('abcde'));   // [ 'a', index: 0, input: 'abcde', groups: undefined ]
+console.log(pattern.exec('davse'));   // [ 'a', index: 1, input: 'davse', groups: undefined ]
+
+// /a./ 일때 .은 하나의 문자를 의미한다. 그 문자가 어떤것인지는 상관이 없지만 무조건 문자가 하나는 있어야한다.
+var pattern = /a./;
+console.log(pattern.exec('abcde'));   // [ 'ab', index: 0, input: 'abcde', groups: undefined ]
+
+var pattern = /a/;
+console.log(pattern.exec('bcdef'));  // null
+
+
+// tset 
+// 찾고자 하는 값이 있는지 없는지 찾는 메서드 (찾는 정보가 있는지 없는지 test)
+var pattern = /a/;
+console.log(pattern.test('abcde'));  // true
+
+var pattern = /a/;
+console.log(pattern.test('bcdef'));  // false
+
+
+// match 메서드
+var pattern = /a/;
+var str = 'abcdef';
+console.log(str.match(pattern));  // [ 'a', index: 0, input: 'abcdef', groups: undefined ]
+str = 'bcdef';
+console.log(str.match(pattern));  // null
+
+
+// replace 메서드
+// 특정 정보를 원하는 정보로 치환해주는 메서드
+var pattern = /a/;
+var str = 'abcdef';
+console.log(str.replace(pattern,'A'));  // Abcdef
+
+
+// < 옵션 >
+// i 
+// i를 붙이면 대문자 소문자를 구분하지 않는다.
+var xi = /a/;
+console.log("Abcde".match(xi));  // null
+
+var oi = /a/i;
+console.log("Abcde".match(oi));  // [ 'A', index: 0, input: 'Abcde', groups: undefined ]
+
+// g
+// g를 붙이면 찾고자 하는 정보가 문자열에 몇개가 포함되었든 전부 배열에 담아서 리턴해준다.
+var xg = /a/;
+console.log("abcdea".match(xg));  // [ 'a', index: 0, input: 'abcdea', groups: undefined ]
+
+var og = /a/g;
+console.log("abcdea".match(og));  // [ 'a', 'a' ]
+
+//
+var ig = /a/ig;
+console.log("AbcdeaA".match(ig)); // [ 'A', 'a', 'A' ]
+
+
+
+
+// < 캡처 >
+var pattern = /(\w+)\s(\w+)/;       // \w은 단어(a~z,A~Z,0~9)를 의미하고 뒤에 +는 추가적으로 다른 단어가 붙어도된다는것을 의미한다. \s는 스페이스를 의미하고 ()은 그룹을 의미한다. coding everybody 은 이 정규표현식을 만족하는 문자열이다.
+var str = "coding everybody";
+var result = str.replace(pattern, "$2, $1"); // $2 라는것은 패턴에서 두번째 그룹을 의미한다. $1은 첫번째 그룹을 의미한다.
+console.log(result);   // everybody, coding
+
+
+
+
+// < 치환 >
+var urlPattern = /\b(?:https?):\/\/[a-z0-0-+&@#\/%?=~_|!:,.;]*/gim;
+var content = '생활코딩 : http://opentutorials.org/course/1 입니다. 네이버 : http://naver.com 입니다. ';
+var result = content.replace(urlPattern, function(url){     // replace가 실행될때 그 메서드 안에서 urlPattern을 찾을때 마다 2번째 인수로 전달된 function이 실행된다. 그때 함수의 인자는 urlPattern 에서 설정한 값(여기서는 url)이 된다.
+    return '<a href ="'+url+'">'+url+'</a>';
+});
+console.log(result);
+

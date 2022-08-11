@@ -1,5 +1,7 @@
- // 모듈을 사용하면 코드의 재활용성이 높아져 효율적인 작업이 가능해진다.
- function welcome() {
-     return 'Hello World'
- }
- console.log(welcome());
+// < 치환 >
+var urlPattern = /\b(?:https?):\/\/[a-z0-0-+&@#\/%?=~_|!:,.;]*/gim;
+var content = '생활코딩 : http://opentutorials.org/course/1 입니다. 네이버 : http://naver.com 입니다. ';
+var result = content.replace(urlPattern, function(url){
+    return '<a href ="'+url+'">'+url+'</a>';
+});
+console.log(result);
