@@ -717,3 +717,274 @@ var result = content.replace(urlPattern, function(url){     // replace가 실행
 });
 console.log(result);
 
+
+
+
+
+// <<<< 유효범위 >>>>
+// < 전역변수 / 지역변수 >
+// 유효범위(scope)는 변수의 수명을 의미한다. 
+// 함수의 외부에 선언되어있는 vscope를 함수의 내부에서 호출할 수 있다.
+var vscope = 'global';
+function fscope() {
+    console.log(vscope);
+}
+fscope();   // global
+
+// 만약 함수 내부와 외부에 둘다 vscope가 정의되어있다면 더 가까운쪽인 함수 내부의 vscope를 참조한다.
+var vscope = 'global';
+function fscope() {
+    var vscope = 'local';
+    console.log(vscope);
+}
+fscope();  // local
+
+
+// 함수 내부에 정의된 변수는 함수의 밖에서는 참조 할 수 없다.
+var vscope = 'global';
+function fscope() {
+    var vscope = 'local';
+    var lv = 'local variables';
+    console.log(lv);
+}
+fscope();       // local variables
+console.log(lv);    // ReferenceError: lv is not defined
+
+
+// 상황1 함수 내부에 var vscope를 정의한 상황에서 함수 외부에서 vscope를 호출했을때
+// 함수 내부에서 var를 사용하면 그 변수는 지역변수가 된다.
+var vscope = 'global';
+function fscope() {
+    var vscope = 'local';
+}
+fscope();  
+console.log(vscope)   // global
+
+// 상황2 함수 내부에 vscope 의 값을 local로 변경한 후, 함수 외부에서 vscope를 호출했을때
+// 함수내부에서 var를 사용하지 않고 vscope의 값을 변경하면 그 변수는 전역변수인 vscope를 의미한다.
+var vscope = 'global';
+function fscope() {
+    vscope = 'local';
+}
+fscope();  
+console.log(vscope)   // local
+
+
+// 함수내부에서 var vscope를 선언하면 함수 외부,내부 둘다 vscope라는 변수가 생성된것이고, 함수내부에서 vscope를 의 값을 변경하면 전역변수vscope가 아니라 지역변수 vscope의 값을 변경하게 된다.
+var vscope = 'global';
+function fscope() {
+    var vscope = 'local';
+    vscope = 'local';             // vscope라는 지역변수가 있는지 먼저 확인한 후, 없으면 전역변수중 vscope가 있는지 확인한다.
+}
+fscope();  
+console.log(vscope)   // global
+
+/////// 전역변수를 써야할 확실한 이유가 없다면 언제나 지역변수를 사용하는것이 더 좋다.
+
+
+
+// < 유효범위의 필요성 >
+// 함수 내부의 i 는 지역변수이다 for 문에있는 var i 가 의미하는것은 전역변수이다 
+function a () {                     
+    var i = 0;
+    console.log(i);
+}
+for(var i = 0; i < 5; i++) {
+    a();
+    //console.log(i);    // 0 1 2 3 4 
+}
+console.log(i);
+a();
+
+
+// function 안에 있는 i 에 var를 없애면 for문안에있는 a(); 에 전역 변수 i = 0;이라는 값이 들어가는것과 같다. 따라서 계속 i = 0인상태가 되고 결국 i < 5를 벗어날수 없으므로 무한루프에 빠지게 된다.
+function a () {                     
+    i = 0;
+}
+for(var i = 0; i < 5; i++) {
+    a();
+    console.log(i);    // 0 0 0 0 0 0 0 0 0 .......
+}
+
+
+
+
+// < 전역변수의 사용 >
+// 불가피하게 전역변수를 사용해야 하는 경우는 하나의 객체를 전역변수로 만들고 객체의 속성으로 변수를 관리하는 방법을 사용한다.
+// calculator 와 coordinate 에 있는 left 와 right는 둘다 동일한 이름을 가지지만 서로 충돌하지는 않는다.
+var MYAPP = {}
+MYAPP.calculator = {
+    'left' : null,       
+    'right' : null
+}
+MYAPP.coordinate = {
+    'left' : null,
+    'right' : null
+}
+
+MYAPP.calculator.left = 10;
+MYAPP.calculator.right = 20;
+function sum() {
+    return MYAPP.calculator.left + MYAPP.calculator.right;
+}
+console.log(sum());  // 30
+
+
+// 단 하나의 전역변수도 허용하고 싶지 않다면 
+// 이렇게 익명함수(즉시실행함수)로 만들어주면 MYAPP은 더이상 전역변수가 아니라 지역변수가 된다.
+(function(){var MYAPP = {}
+MYAPP.calculator = {
+    'left' : null,       
+    'right' : null
+}
+MYAPP.coordinate = {
+    'left' : null,
+    'right' : null
+}
+
+MYAPP.calculator.left = 10;
+MYAPP.calculator.right = 20;
+function sum() {
+    return MYAPP.calculator.left + MYAPP.calculator.right;
+}
+console.log(sum());  // 30
+}())
+
+
+
+
+// < 유효범위의 대상(함수) >
+// 자바스크립트는 함수에 대한 유효범위만을 제공한다. 많은 언어들이 블록(대체로{,})에 대해 유효범위를 제공하는 것과 다른 점이다. 
+
+
+
+// 자바스크립트 코드
+for(var i = 0; i < 1; i++){
+    var name = 'coding everybody';
+}
+console.log(name);   // coding everybody
+
+// 자바 코드
+// 자바스크립트에서는 for {}안에서 선언된 변수도 전역 변수로 처리했지만 자바나 다른많은 언어들은 {} 안에서 선언하면 지역변수로 처리하기때문에 {} 밖에서 호출을 할 수 없다.
+for(int i = 0; i < 10; i++){
+    String name = 'Iron man';
+}
+System.out.println(name);  // Error
+
+
+
+
+// < 정적 유효범위 >
+// 자바스크립트는 함수가 선언된 시점에서의 유효범위를 갖는다. 이러한 유효범위의 방식을 정적 유효범위(static scoping), 혹은 렉시컬(lexical scoping)이라고 한다.
+var i = 5;  // 전역변수
+
+function a() {
+    var i = 10;
+    b();
+}
+
+function b() {
+    console.log(i);        // b() 안에 지역변수 i 가 있는지 확인하고, 없으면 전역변수에서 i를 찾게되는데, 이때 사용될때는 b함수 내부에서 사용되기 때문에 b함수의 선언된 지역변수 i를 참조할 수 있어보이지만, 실제로는 전역에 선언되 var i = 5를 참조한다. 
+}                          // 한마디로 사용될때를 기준으로 참조하는 것이 아니라, 사용될 때를 기준으로 변수를 참조한다.
+
+a();  // 5
+
+
+
+
+
+// <<<< 값으로서의 함수와 콜백 >>>>
+// 자바스크립트에서는 함수도 객체다. 다시 말해서 일종의 값이다. 거의 모든 언어가 함수를 가지고 있다. 자바스크립의 함수가 다른 언어의 함수와 다른 점은 함수가 값이 될 수 있다는 점이다. 
+// 이 함수는 a라는 변수에 저장되어있다고 할 수 있다.
+function a(){}
+// 이 함수를 다르게 표현하면
+var a = funciton() {}
+
+// 또한 함수는 다음과 같이 객체의 값으로 포함될 수 있다. 이렇게 객체의 속성 값으로 담겨진 함수를 메소드(method)라고 부른다.
+a = {
+    b:function(){       // 여기서 b는 객체안에서 변수와 같은 역할을 하고 있다 이것을 다른 말로 속성, 영어로는 property 라고 부른다. 또한 그 속성의 값이 함수라면 메소드(method)라고 부른다.
+    }
+};
+
+// 함수는 값이기 때문에 다른 함수의 인자로 전달 될수도 있다.
+function cal(func, num){
+    return func(num)
+}
+
+function increase(num) {
+    return num + 1
+}
+
+function decrease(num) {
+    return num - 1
+}
+
+console.log(cal(increase, 1));   // 2
+console.log(cal(decrease, 1));   // 0
+
+
+
+// 함수는 함수의 리턴 값으로도 사용할 수 있다.
+function cal(mode) {
+    var funcs = {
+        'plus' : function(left, right){return left + right},
+        'minus' : function(left, right){return left - right}
+    }
+
+    return funcs[mode];
+}
+console.log(cal('plus')(2, 1));   // 3
+console.log(cal('minus')(2, 1));  // 1
+
+
+
+// 배열의 값으로도 함수를 사용할 수 있다.
+// 변수 매개변수 리턴값 등으로 사용할 수 있는 데이터를 first-class-citizen or first-class-object 등등 으로 부른다.
+var process = [
+function(input) { return input + 10;},    
+function(input) { return input * input;},
+function(input) { return input / 2;}    
+];
+var input = 1;
+for(var i = 0; i < process.length; i++) {
+    input = process[i](input);
+}
+console.log(input); // 60.5
+
+
+
+// < 콜백 >
+// 어떠한 함수가 수신하는 인자가 함수인 경우를 콜백이라고 한다.
+// 콜백함수를 이용하면 콜백함수를 받는 원래의 함수가 동작하는 방식을 완전히 바꿀수 있다.
+// 아래의 예로는 sort()함수가 원래의 동작방식과는 다르게 동작하도록 sortfunc라는 콜백함수를 이용하는 것이다.
+var numbers = [20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+var sortfunc = function(a, b) {   // 비교대상이 a 와 b 가 인자로 전달된다.
+    if( a > b) {
+        return 1;
+    } else if (a < b) {
+        return -1;
+    } else {
+        return 0;
+    }
+ }
+
+console.log(numbers.sort(sortfunc));    // sort() 앞에 .이 있는것으로 numbers가 객체(배열객체)라는것을 알 수 있다. 여기서 sort()는 객체에 속한 함수이므로 method라고 한다. sort()와 같은 메서드는 기본적으로 자바스크립트에서 제공하는것이므로 이런것은 빌트인객체 라고 하고 사용자가 만드는것은 사용자정의객체 라고 한다.
+                                        // sortfunc 함수가 여기서는 콜백함수가 된다.
+
+
+
+
+// 위의 처럼 a와 b의 관계를 1 , -1, 0으로 구분한다면 다음과 같이 더 단순한게 바꿀수 있다.
+var numbers = [20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+var sortfunc = function(a, b) {
+   return a - b;
+   // return b - a; 라고 하면 역순으로 정렬된다.
+ }
+
+console.log(numbers.sort(sortfunc));
+
+
+
+
+
+// < 비동기 콜백 >
