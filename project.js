@@ -988,3 +988,155 @@ console.log(numbers.sort(sortfunc));
 
 
 // < 비동기 콜백 >
+
+
+
+// <<<< 클로저 >>>>
+// 클로저(closure)는 내부함수가 외부함수의 맥락(context)에 접근할 수 있는 것을 가르킨다. 클로저는 자바스크립트를 이용한 고난이도 테크닉을 구사하는데 필수적인 개념으로 활용된다.
+
+// 내부함수
+// 자바스크립트는 함수 안에서 또 다른 함수를 선언할 수 있다. 
+// 함수 outter의 내부에는 함수 inner가 정의 되어 있다. 함수 inner를 내부 함수라고 한다.
+function outter() {
+    function inner() {
+        var title = 'coding everybody';
+        console.log(title);
+    }
+    inner();
+}
+
+outter();    // coding everybody
+
+
+// 내부함수는 외부함수의 지역변수에 접근할 수 있다. 
+function outter() {
+    var title = 'coding everybody';
+    function inner() {
+        console.log(title);
+    }
+
+    inner();
+}
+
+outter();    // coding everybody
+
+
+
+// 클로저(closure)는 내부함수와 밀접한 관계를 가지고 있는 주제다. 내부함수는 외부함수의 지역변에수 접근 할 수 있는데 외부함수의 실행이 끝나서 외부함수가 소멸된 이후에도 내부함수가 외부함수의 변수에 접근 할 수 있다. 이러한 메커니즘을 클로저라고 한다. 
+function outter() {
+    var title = 'coding everybody';
+    return function() {
+        console.log(title);
+    }
+}
+var inner = outter();
+inner();  // coding everybody     외부함수가 실행이 끝나면 종료됨에도 불구하고 외부함수에서 파생된 내부함수에서 이미 사라진 외부함수에 접근을 시도하고 있고, 그 접근이 성공적으로 이루어질뿐만아니라 외부함수가 종료된 이후에도 내부함수를 통해서 접근할 수 있다.
+
+
+
+
+// < private variable >
+function factory_movie(title) {
+    return {
+        get_title : function() {
+            return title;
+        },
+        set_title : function(_title) {
+            title = _title
+        }
+    }
+}
+ghost = factory_movie('Ghost in the shell');
+matrix = factory_movie('Matrix');
+console.log(ghost.get_title());    // Ghost in the shell
+console.log(matrix.get_title());   // Matrix
+ghost.set_title("공각기동대");
+console.log(ghost.get_title());    // 공각기동대   ghost라는 변수의 title의 값만을 변경할수 있을뿐 matrix가 접근하는 title의 값은 그대로 유지된다.
+console.log(matrix.get_title());   // Matrix
+
+
+
+// title 이라는 변수를 숨겨놓고 이 변수에 접근하기 위해서는 get_title과 set_title만을 이용해서 접근할 수 있게 한다. 또한 변경할 수 있는 데이터타입을 지정할수 있다.
+function factory_movie(title) {
+    return {
+        get_title : function() {
+            return title;
+        },
+        set_title : function(_title) {
+            if(typeof _title === 'String'){
+            title = _title
+        } else {
+            console.log("제목은 문자열이어야 합니다.");
+            }
+        }
+    }
+}
+ghost = factory_movie('Ghost in the shell');
+matrix = factory_movie('Matrix');
+console.log(ghost.get_title());    // Ghost in the shell
+console.log(matrix.get_title());   // Matrix
+ghost.set_title("1");              // 제목은 문자열이어야 합니다
+console.log(ghost.get_title());    // Ghost in the shell
+console.log(matrix.get_title());   // Matrix
+
+
+
+
+// 클로저를 사용할 때 흔히 일어나는 실수
+// 실행전 기대하는 출력은 0 1 2 3 4 이지만 실제 출력되는값은 55555이다. 이러한 현상이 발생하는 이유는 for문에서 선언한 var i 가 전역변수로 취급되기 때문이다.
+var arr = []
+for(var i = 0; i < 5; i++) {
+    arr[i] = function() {
+        return i;
+    }
+}
+for(var index in arr) {
+    console.log(arr[index]());
+}
+/*
+5
+5
+5
+5
+5
+*/
+
+
+// 렉시컬 환경의 "외부 렉시컬 환경에 대한 참조"에 저장할 참조값, 즉 상위 스코프에 대한 참조는 함수 정의가 평가되는 시점에 함수가 정의된 환경(위치)에 의해 결정된다. 이것이 바로 렉시컬 스코프다.
+const x = 1;
+function foo() {
+    const x = 10;
+    bar();
+}
+
+function bar() {
+    console.log(x);
+}
+
+foo();   // 1
+bar();   // 1
+
+
+// https://youtu.be/bwwaSwf7vkE (closure 개념 설명 영상)
+
+let l0 = 'l0';
+function fn1() {
+    let l1 = 'l1';
+    console.log(l0, l1);   
+}
+fn1();   // l0 l1
+
+
+
+
+// <<<< arguments >>>>
+// 함수에는 arguments라는 변수에 담긴 숨겨진 유사 배열이 있다. 이 배열에는 함수를 호출할 때 입력한 인자가 담겨있다. 
+function sum() {
+    var i, _sum = 0;
+    for(i = 0; i < arguments.length; i++) {
+        console.log(i+' : '+arguments[i]);
+        _sum += arguments[i]
+    }
+}
+
+console.log(sum());
