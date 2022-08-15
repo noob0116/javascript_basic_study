@@ -1131,12 +1131,230 @@ fn1();   // l0 l1
 
 // <<<< arguments >>>>
 // 함수에는 arguments라는 변수에 담긴 숨겨진 유사 배열이 있다. 이 배열에는 함수를 호출할 때 입력한 인자가 담겨있다. 
+// 자바스크립트에서는 매개변수가 없을때 인자를 입력해도 에러가 나지 않는다.
 function sum() {
     var i, _sum = 0;
-    for(i = 0; i < arguments.length; i++) {
-        console.log(i+' : '+arguments[i]);
+    for(i = 0; i < arguments.length; i++) {  // arguments에는 인자들이 보관된다. arguments.length를 통해 전달받은 인자의 개수를 알 수 있다.
+        console.log(i+' : '+arguments[i]);   // arguments[0] = 1, arguments[1] = 2, arguments[3] = 3, ...
         _sum += arguments[i]
+    }
+    return _sum;
+}
+
+
+console.log('result : ' +sum(1, 2, 3, 4));         // 10
+console.log('result : ' +sum(1, 2, 3, 4, 10));     // 20
+
+
+
+
+
+// < 매개변수의 수 >
+// 매개변수와 관련된 두가지 수가 있다. 하나는 함수.length, 다른 하나는 arguments.length이다. 함수 length는 함수로 전달된 실제 인자의 수를 의미하고, arguments.length는 함수에 정의된 인자의 수를 의미한다.
+// 사용자가 개발자의 의도와 다르게 함수를 사용할 수도 있으므로 함수.length와 arguments.length를 서로 비교해서 올바르게 사용할 수 있도록 유도할 수 있다.
+function zero() {
+    console.log(
+        'zero.length', zero.length,
+        'arguments', arguments.length
+    );
+}
+zero();  // zero.length 0 arguments 0
+
+
+
+function one(arg1) {
+    console.log(
+        'one.length', one.length,
+        'arguments', arguments.length
+    );
+}
+
+one('val1', 'val2');  // one.length 1 arguments 2       // .length 는 함수의 매개변수의 숫자를 의미하므로 1이고, arguments.length는 실제로 전달한 인자의 개수를 의미하므로 2이다.
+
+
+
+function two(arg1, arg2) {
+    console.log(
+        'two.length', two.length,
+        'arguments', arguments.length
+    );
+}
+two('val1');     // two.length 2 arguments 1
+
+
+
+
+
+
+// <<<< 함수의 호출 >>>>
+// 가장 기본적인 함수 호출 방법
+function func() {
+}
+func();
+
+
+
+// < Function.apply, Function.call
+// JavaScript는 함수를 호출하는 특별한 방법을 제공한다. 함수는 객체이다. 아래의 예제에서 함수 func는 Function이라는 객체의 인스턴스다. 따라서 func는 객체 Function이 가지고 있는 메소드들을 상속학 있다. Function.apply와 Function.call을 이용해서 함수를 호출할 수 있다.
+function sum(arg1, arg2) {
+    return arg1 + arg2;
+}
+// 이런식으로 apply의 첫번째 인자를 null 로 사용하는것은 좋지 못하다. 따라서 이런식의 사용의 지양해야한다.
+console.log(sum.apply(null, [1,2]));   // 3
+
+
+
+
+// < Function.apply의 사용법 >
+// apply는 call과 비슷하지만 call은 매개변수를 직접 전달하고, apply는 매개변수를 배열의 형태로 전달한다는 차이점이 있다.
+o1 = {val1:1, val2:2, val3:3}
+o2 = {v1:10, v2:50, v3:100, v4:25}
+function sum(){
+    var _sum = 0;
+    for(name in this) {            
+        _sum += this[name];    // this의 키값을 name에 저장한다.
+    }
+    return _sum;
+}
+console.log(sum.apply(o1));   // 6          이것을 가능하게 하는것은 sum.apply(o1)을 하면 sum 함수안에 var this = o1; 이 생기는것과 같은 
+console.log(sum.apply(o2));   // 185
+
+// console.log(sum.apply(o1)); 는 o1.sum 처럼 동작한다.
+// console.log(sum.apply(o2)); 는 o2.sum 처럼 동작한다.
+
+
+// 위의 예제를 이해하기 편하게 변경하면 아래와 같다.
+// 하지만 아래와 같은 코드는 객체에 함수를 포함시키면서 함수내부에도 type을 구분하는 문장을 넣어야하기때문에 지양하는것이 좋다.
+function sum(){
+    var _sum = 0;
+    for(name in this) {            
+        if(typeof this[name] !== 'function')               
+        _sum += this[name];
+    }
+    return _sum;
+}
+o1 = {var1:1, val2:2, val3:3, sum:sum }
+o2 = {v1:10, v2:50, v3:100, v4:25, sum:sum }
+console.log(o1.sum());    // 6
+console.log(o2.sum());    // 185
+
+
+
+
+// ---------------------------------------<< 객체 지향 프로그래밍 >>----------------------------------------
+// 객체지향 프로그래밍(Object Oriented Programming)은 좀더 나은 프로그램을 만들기 위한 프로그래밍 패러다임으로 로직을 상태(state)
+// 와 행위(behave)로 이루어진 객체로 만드는 것이다. 이 객체들을 마치 레고 블럭처럼 조립해서 하나의 프로그램을 만드는 것이 객체지향 프로
+// 그래밍이라고 할 수 있다. 다시 말해서 객체지향 프로그래밍은 객체를 만드는 것이다. 
+
+
+
+
+
+// ---------------------------------------<< 생성자와 new >>-----------------------------------------------
+// 객체
+// 객체란 서로 연관된 변수와 함수를 그룹핑한 그릇이라고 할 수 있다. 객체 내의 변수를 프로퍼티(property)함수를 메소드(method)라고 부른다. 
+var person = {}    // 빈 객체 생성(Object 라는 이름의 Object를 만드는것)
+person.name = 'egoing';
+person.introduce = function() {
+    return 'My name is '+this.name;
+}
+console.log(person.introduce());   // My name is egoing
+
+// 위의 코드는 객체를 만드는 과정에 분산되어 있다. 객체를 정의 할 때 값을 셋팅하도록 코드를 바꾸면 아래와 같다.
+var person1 = {
+    'name': 'egoing',
+    'introduce': function() {
+        return 'My name is ' +this.name;
     }
 }
 
-console.log(sum());
+console.log(person.introduce());   // My name is egoing
+
+
+
+// 위의 코드와 비슷한 다른 객체를 생성한다고 해보자
+// 위의 코드와 아래의 코드는 서로 다른 객체이지만 introduce라는 메서드의 내용이 완전히 일치한다. 만약 이런경우 introduce메서드의 변경사항이 생기면 모든 객체의 메서드를 일일히 변경해줘야하므로 중복이 발생한다. 이럴때 사용하는 것이 생성자와 new이다.
+var person2 = {
+    'name': 'leezche',
+    'introduce': function() {
+        return 'My name is ' +this.name;
+    }
+}
+
+console.log(person.introduce());   // My name is leezche
+
+
+
+// 생성자
+// 생성자(constructor)는 객체를 만드는 역할을 하는 함수다. 자바스크립트에서 함수는 재사용 가능한 로직의 묶음이 아니라 객체를 만드는 창조자라고 할 수 있다.
+function Person() {}              
+var p = new Person();               // 여기서 Person()을 함수라고 하지않고 생성자라고 한다. (객체의 생성자)
+// p = Person {} 
+p.name = 'egoing';
+p.introduce = function() {
+    return 'My name is ' + this.name;
+}
+
+console.log(p.introduce());   // My name is egoing
+
+
+// 비슷한 구조를 가진 객체를 생성자 함수를 통해 2개 생성해본다고 해보자.
+function Person() {}
+    var p1 = new Person();
+    p1.name = 'egoing';
+    p1.introduce = function() {
+        return 'My name is '+this.name;
+    }
+console.log(p1.introduce());  // My name is egoing
+
+
+    var p2 = new Person();
+    p2.name = 'leezche';
+    p2.introduce = function() {
+        return 'My name is '+this.name;
+    }
+console.log(p2.introduce());  // My name is leezche
+
+// 위의 코드를 살펴보면 introduce 메서드의 내용이 완전히 동일한데, 각자 서술되어 있는것을 볼 수 있다.
+// 중복을 피하기 위해 아래와 같이 코드를 수정하면 유지보수하기 훨씬 용이한 코드가 된다.
+// 생성자는 객체에 대한 초기화를 한다고 할 수 있다.
+function Person(name) {
+    this.name = name;
+    this.introduce = function() {
+        return 'My name is ' +this.name;
+    }
+}
+
+var p1 = new Person('egoing'); 
+console.log(p1.introduce());        // My name is egoing
+
+var p2 = new Person('leezche');
+console.log(p2.introduce());        // My name is leezche
+
+
+
+
+
+// ------------------------------------<< 전역객체 >>------------------------------------------------
+// 전역객체(Global object)는 특수한 객체다. 모든 객체는 이 전역객체의 프로퍼티다.
+function func() {
+    console.log('Hello?');
+}
+
+func();           // Hello?
+window.func();    // Hello?
+
+
+
+// 우리가 정의한 메서드도 결국 전역객체의 속해있다.
+var o = {'func':function(){
+    console.log('hello?');
+    }
+}
+o.func();          // hello?
+window.o.func();   // hello?
+
+
+
+// 전역객체 API
+// ECMAScript에서는 전역객체의 API를 정의해두었다. 그 외의 API는 호스트 환경에서 필요에 따라서 추가로 정의하고 있다. 이를테면 웹브라우저 자바스크립트에서는 alert()이라는 전역객체의 메소드가 존재하지만 node.js에는 존재하지 않는다. 또한 전역객체의 이름도 호스트환경에 따라서 다른데, 웹브라우저에서 전역객체는 window이지만 node.js에서는 global이다.

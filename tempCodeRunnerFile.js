@@ -1,9 +1,6 @@
-function sum() {
-    var i, _sum = 0;
-    for(i = 0; i < arguments.length; i++) {
-        console.log(i+' : '+arguments[i]);
-        _sum += arguments[i]
+var o = {'func':function(){
+    console.log('hello?');
     }
 }
-
-console.log(sum());
+o.func();
+window.o.func();
