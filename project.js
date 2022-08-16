@@ -1358,3 +1358,280 @@ window.o.func();   // hello?
 
 // 전역객체 API
 // ECMAScript에서는 전역객체의 API를 정의해두었다. 그 외의 API는 호스트 환경에서 필요에 따라서 추가로 정의하고 있다. 이를테면 웹브라우저 자바스크립트에서는 alert()이라는 전역객체의 메소드가 존재하지만 node.js에는 존재하지 않는다. 또한 전역객체의 이름도 호스트환경에 따라서 다른데, 웹브라우저에서 전역객체는 window이지만 node.js에서는 global이다.
+
+
+
+
+// ----------------------------------<< this >>---------------------------------------------
+// this는 함수 내에서 함수 호출 맥락(context)를 의미한다. 맥락이라는 것은 상황에 따라서 달라진다는 의미인데 즉 함수를 어떻게 호출하느냐에 따라서
+// this가 가리키는 대상이 달라진다는 뜻이다. 함수와 객체의 관계가 느슨한 자바스크립에서 this는 이 둘을 연결시켜주는 실질적인 연결점의 역할을 한다.
+// 함수를 호출했을 때 this는 무엇을 가르키는지 살펴보자. this는 전역객체이 window와 같다.
+function func() {
+    if(global === this) {
+        console.log("global === this");   
+    }
+}
+func();  // global === this
+
+
+// < 메소드의 호출과 this >
+var o = {
+    func: function() {
+        if(o === this) {
+            console.log("o === this");
+        }
+    }
+}
+o.func();    // o === this
+// 사실 일반 함수에서 this를 호출했을때 window가 나오는 이유또한 window.func에서 앞에 window.가 생략되었기때문에 o.func와 그 과정은 다르지 않다.
+
+
+
+// < 생성자와 this >
+var funcThis = null;
+
+
+// 만약 아래의 함수 안에 if(o2 == this){} 라는 판별문을 만들어도 o2라는 변수에 객체가 할당되기 전이므로 o2의 값과 this의 값을 비교할 수 없다.
+function Func() {
+    funcThis = this;     // 이 함수의 this인 global 이 funcThis에 할당된다.
+}
+var o1 = Func();
+if(funcThis === global) {
+    console.log('global');          // global
+}
+
+// 생성자로 사용되면 this의 값이 생성될 객체를 가리킨다.
+var o2 = new Func();
+if(funcThis === o2) {               // o2
+    console.log('o2');
+}
+
+
+
+// < apply와 this >
+// 함수의 메소드인 apply, call을 이용하면 this의 값을 제어할 수 있다.
+// 함수는 객체라는것을 명심하자.
+function sum(x,y){               // 이런식으로 함수를 작성하는 방법을 함수리터럴 이라고 한다. 같은 방식으로 var 0 = {} 을 객체리터럴 이라고 하고, var a [1,2,3];을 배열리터럴 이라고 한다.
+    return x + y;
+}
+console.log(sum(1, 3));  // 4       
+
+var sum2 = new Function('x','y','return x + y');      // 이런식으로 함수를 작성하면 함수의 본문의 내용이 길어졌을때 작성하기에 불편함이 있다.
+sum2(1, 2);  // 4
+
+
+// 위의 코드는 함수가 객체라는것을 상기시키는 내용이고 아래부터가 apply와 this에 관한 본문이다.
+
+var o = {}
+var p = {}
+function func() {
+    switch(this) {                  // if-switch 는 서로 대체제 관계이다. for-while 은 서로 대체제 관계이다.
+        case o:
+            console.log('o');
+            break;
+        case p:
+            console.log('p');
+            break;
+        case global:
+            console.log('global');
+            break;
+    }
+}
+func();         // global
+func.apply(o);  // o
+func.apply(p);  // p
+
+////////// 함수가 누구의 소속인가에 따라 그 객체를 가리킨다라는것이 핵심이다.
+
+
+
+
+
+
+// --------------------------------<< 상속 >>-------------------------------------------
+// 상속이란?
+// 객체는 연관된 로직들로 이루어진 작은 프로그램이라고 할 수 있다. 상속은 객체의 로직을 그대로 물려 받는 또 다른 객체를 만들 수 있는 기능을 의미한다.
+// 단순히 물려받는 것이라면 의미가 없을 것이다. 기존의 로직을 수정하고 변경해서 파생된 새로운 객체를 만들 수 있게 해준다.
+function Person(name) {
+    this.name = name;
+    this.introduce = function() {
+        return 'My name is ' +this.name;
+    }
+}
+
+var p1 = new Person('egoing');
+console.log(p1.introduce());    // My name is egoing
+
+// 어떠한 객체를 상속받는 방법에 대해 알아본다. 일단은 사용법을 먼저 익히고, 추후에 작동원리를 살펴본다고 생각하자.
+function Person(name) {
+    this.name = name;
+}
+Person.prototype.name = null,
+Person.prototype.introduce = function() {
+    return 'My name is '+this.name;
+}
+
+function Programmer(name){
+    this.name = name;
+}
+Programmer.prototype = new Person();  // 이런식으로 Person()이라는 객체를 Programmer 라는 객체에 할당받고 싶다면 Programmer.prototype에 Person의 생성자 함수를 통해 상속할 수 있다.
+
+var p1 = new Programmer('egoing');
+console.log(p1.introduce());   // My name is egoing
+// 분명 Programmer의 객체에는 introduce()라는 메서드가 없지만 1477줄에서 new Person()을 통해 Person 객체를 상속받았기 때문에 introduce라는 메서드를 사용할 수 있게 되었다.
+
+
+// < 객체가 다른 객체를 상속받았을때 새로운 기능을 추가하는 방법 >
+function Person(name) {
+    this.name = name;
+}
+Person.prototype.name = null;
+Person.prototype.introduce = function() {
+    return 'My name is '+this.name;
+}
+function Programmer(name){
+    this.name = name;
+}
+Programmer.prototype = new Person();              // introduce는 Person이든 Programmer 든 사람이라면 가지고 있는 특성이기 때문에 Person에서 상속받아 사용하고 
+Programmer.prototype.coding = function() {        // coding은 Programmer만의 특수한 능력이므로 Programmer의 객체에 추가 시켜준다.
+    return 'hello world';
+}
+
+var p1 = new Programmer('egoing');
+console.log(p1.introduce());     // My name is egoing
+console.log(p1.coding());        // hello world
+
+
+// < 위의 코드에서 Programmer 와 더불어 Designer 라는 객체를 포함시킨 예제이다. >
+function Person(name) {
+    this.name = name;
+}
+Person.prototype.name = null;
+Person.prototype.introduce = function() {
+    return 'My nickname is '+this.name;
+}
+function Programmer(name){
+    this.name = name;
+}
+Programmer.prototype = new Person();              // introduce는 Person이든 Programmer 든 사람이라면 가지고 있는 특성이기 때문에 Person에서 상속받아 사용하고 
+Programmer.prototype.coding = function() {        // coding은 Programmer만의 특수한 능력이므로 Programmer의 객체에 추가 시켜준다.
+    return 'hello world';
+}
+
+function Designer(name){
+    this.name = name;
+}
+Designer.prototype = new Person();              
+Designer.prototype.design = function() {        
+    return 'beautiful!';
+}
+
+var p1 = new Programmer('egoing');
+console.log(p1.introduce());     // My name is egoing
+console.log(p1.coding());        // hello world
+
+var p2 = new Designer('leezche');
+console.log(p2.introduce());     // My name is leezche
+console.log(p2.design());        // beautiful!
+
+
+
+// ----------------------------<< prototype >>--------------------------------------------
+// prototype
+// 한국어로는 원형정도로 번역되는 prototype은 말 그대로 객체의 원형이라고 할 수 있다. 함수는 객체다. 그러므로 생성자로 사용될 함수도 객체다.
+// 객체는 프로퍼티를 가질 수 있는데 prototype이라는 프로퍼티는 그 용도가 약속되어 있는 특수한 프로퍼티다. prototype에 저장된 속성들은 
+// 생성자를 통해서 객체가 만들어질 때 그 객체에 연결된다.
+
+function Ultra(){}
+Ultra.prototype.ultraProp = true;
+
+function Super(){}
+Super.prototype = new Ultra();
+
+function Sub(){}
+Sub.prototype = new Super();
+
+var o = new Sub();
+console.log(o.ultraProp);   // true
+
+
+// 
+function Ultra(){}
+Ultra.prototype.ultraProp = true;
+
+function Super(){}
+Super.prototype = new Ultra();
+
+function Sub(){}
+Sub.prototype = new Super();
+
+var o = new Sub();
+o.ultraProp = 1;
+console.log(o.ultraProp);   // 1    먼저 o에 ultraProp이 있는지 검색한다.
+
+
+//
+function Ultra(){}
+Ultra.prototype.ultraProp = true;
+
+function Super(){}
+Super.prototype = new Ultra();
+
+function Sub(){}
+Sub.prototype = new Super();
+Sub.prototype.ultraProp = 2;
+
+var o = new Sub();
+console.log(o.ultraProp);   // 2    o에 ultraProp라는 프로퍼티가 있는지 확인한 후, 생성자의 prototype에서 ultraProp을 찾아서 있다면 반환한다.
+
+
+
+function Ultra(){}
+Ultra.prototype.ultraProp = true;
+
+function Super(){}
+var t = new Ultra();
+t.ultraProp = 4;
+Super.prototype = t;
+
+function Sub(){}
+var s = new Super();
+// s.ultraProp = 3;                    이부분을 주석처리하지않으면 3이 나온다.
+Sub.prototype = s;
+
+var o = new Sub();
+console.log(o.ultraProp);  // 4
+
+
+// 주의할 것.
+function Sub(){}
+Sub.prototype = new Super();   // 이런식으로 하지 않고 우항을 Super.prototype 이라고 하면 잘 작동되는것처럼 보일 수 있지만, 자식의 프로토타입을 수정했을때, 부모의 프로토타입 또한 수정되는 오류가 발생할 수 있으니 주의해야 한다.
+
+
+
+
+
+// ------------------------------<< 표준 내장 객체의 확장 >>-------------------------------------
+// 표준 내장 객체(Standard Built-in-Object)는 바라스크립트가 기본적으로 가지고 있는 객체들을 의미한다. 내장 객체가 중요한 이유는
+// 프로그래밍을 하는데 기본적으로 필요한 도구들이기 떄문이다. 결국 프로그래밍이라는 것은 언어와 호스트 환경에 제공하나는 기능들을 통해서
+// 새로운 소프트웨어를 만들어내는 것이기 때문에 내장 객체에 대한 이해는 프로그래밍의 기본이라고 할 수 있다. 
+
+// 자바스크립트는 아래와 같은 내장 객체를 가지고 있다.
+// Object, Function, Array, String, Boolean, Number, Math, Date, RegExp
+
+
+// < 배열의 확장1 >
+var arr = new Array('seoul', 'new york', 'ladarkh', 'pusan', 'Tsukuba');
+function getRandomValueFromArray(arr) {
+    var index = Math.floor(arr.length * Math.random());
+    return arr[index];
+}
+
+console.log(getRandomValueFromArray(arr));
+
+
+// < 배열의 확장2 >
+Array.prototype.random = function(){
+    
+}
+var arr = new Array('seoul', 'new york', 'ladarkh', 'pusan', 'Tsukuba');
