@@ -1631,7 +1631,188 @@ console.log(getRandomValueFromArray(arr));
 
 
 // < 배열의 확장2 >
+// Array는 배열 생성자 함수이다.
 Array.prototype.random = function(){
-    
+    var index = Math.floor(this.length * Math.random());  // 굳이 arr을 매개변수로 받을 필요가 없이 this를 넣어주면 이것자체로 배열객체를 가리킨다.
+    return this[index];
 }
 var arr = new Array('seoul', 'new york', 'ladarkh', 'pusan', 'Tsukuba');
+console.log(arr.random());
+
+
+
+
+
+// ----------------------------------<< Object >>-------------------------------------------
+// Object 객체는 객체의 가장 기본적인 형태를 가지고 있는 객체이다. 다시 말해서 아무것도 상속받지 않는 순수한 객체다. 자바스크립트에서는 값을 저장하는 기본적인 단위로 Object를 사용한다.
+var grades = {'egoing': 10, 'k8805': 6, 'sorialgi': 80};
+// 동시에 자바스크립트의 모든 객체는 Object 객체를 상속 받는데, 그런 이유로 모든 객체는 Object 객체의 프로퍼티를 가지고 있다.
+// 또한 Object 객체를 확장하면 모든 객체가 접근할 수 있는 API를 만들 수 있다. 아래는 Object 객체를 확장한 사례다.
+// 모든 객체에 필요한 기능들은 Object.prototype에 있고, 사용자가 모든객체에 어떠한 기능을 추가하고 싶을때도 Object.prototype에 만들어주면 된다.
+
+
+
+// Object.~ 와 Object.prototype.~ 의 차이점
+// prototype이 있는 경우에는 객체를 만들고 그 객체의 이름 예를들면 아래의 코드의 o.toString 과 같이 사용하고,
+// prototype이 없는 경우에는 Object.keys(arr)처럼 Object.~ 을 하고 인자로 어떠한 변수를 받아서 사용한다.
+
+// Object.keys()
+var arr = {"name": "egoing", "age": 20, "city": "seoul"}
+console.log(Object.keys(arr));  // [ 'name', 'age', 'city' ]   Keys 메서드는 배열의 키값을 뽑아서 배열로 만들어준다.
+
+
+// Object.prototype.toString()
+// toString은 어떤 객체나 배열이 가지고 있는 값들이나 상태를 사람이 보기 편하게 출력해주는 메서드이다.
+var o = new Object();
+console.log('o.toString()', o.toString());
+
+var a = new Array(1,2,3);
+console.log('a.toString', a.toString());
+
+
+
+
+// < object 확장 >
+// 만약 모든 객체가 사용할 수 있었으면 하는 기능을 추가하고 싶을때는 이렇게 Object.prototype.~을 이용해서 추가해줄 수 있다.
+Object.prototype.contain = function(needle){
+    for(var name in this){
+        if(this[name] === needle){
+            return true;
+        }
+    }
+    return false;
+}
+var o = {'name':'egoing', 'city':'seoul'} 
+console.log(o.contain('grapittie'));              // false
+var a = ['egoing','leezche','grapittie'];
+console.log(a.contain('leezche'));             // true
+
+
+
+
+// < Object 확장의 위험 >
+// Object를 확장하는 이유는 모든 객체의 특정한 기능을 추가하고 싶기 때문이지만, 문제점 또한 모든 객체에 영향을 준다는 것이다.
+Object.prototype.contain = function(needle){
+    for(var name in this){
+        if(this[name] === needle){
+            return true;
+        }
+    }
+    return false;
+}
+var o = {'name':'egoing', 'city':'seoul'} 
+var a = ['egoing','leezche','grapittie'];
+
+for(var name in o){
+    console.log(name);  // name city contain
+}
+
+for(var name in a){
+    console.log(name);  // 0 1 2 contain
+}
+
+// 우리가 o와 a의 객체에 추가한 정보와 별개로 contain이라는 prototype에 정의한 정보까지 같이 객체에 포함되어졌다.
+// 따라서 Objcet를 확장하는 것은 여러가지 문제가 생길수 있기 때문에 신중하게 고려해야 한다.
+
+// 그럼에도 자신이 가지고 있는 정보만을 출력하고 싶다면 아래의 메서드를 이용할 수 있다.
+// hasOwnproperty를 통해서 어떠한 프로퍼티의 이름이 그 객체의 직접적인 소유인가를 알려주는 메서드이다.
+for(var name in a){
+    if(a.hasOwnProperty(name)){
+        console.log(name);      // 0 1 2
+    }
+}
+
+for(var name in o){
+    if(o.hasOwnProperty(name)){
+        console.log(name);      // name city
+    }
+}
+
+
+// ------------------------------<< 데이터 타입 >>--------------------------------------
+// 데이터 타입은 크게 2가지로 구분할 수 있다. 첫번째는 원시 데이터 타입 , 두번째는 객체 데이터타입이라고 한다.
+// 원시 데이터 타입은 기본데이터 타입이라고 하고, 객체 데이터타입은 참조 데이터 타입이라고 한다.
+// 숫자, 문자열, 불리언(true/ false), null, undefined를 제외한 모든 데이터 타입들은 객체다.
+
+
+
+// < 래퍼 객체 >
+var str = 'coding';
+// 자바스크립트는 문자열은 객체가 아니지만 마치 이 라인에 str = new String('coding'); 이 있는것처럼 작동한다.
+console.log(str.length);    // 6
+console.log(str.charAt(0)); // c
+
+// ⬆️ 문자열은 분명히 프로퍼티와 메소드가 있다. 그렇다면 객체다. 그런데 문자열을 객체가 아니라고 하는 이유는, 내부적으로 문자열이 원시 데이터 타입이고
+// 문자열과 관련된 어떤 작업을 하려고 할 때 자바스크립트는 임시로 문자열 객체를 만들고 사용이 끝나면 제거하기 때문이다. 이러한 처리는 내부적으로 일어난다. 
+// 어떻게 돌아가는지는 몰라도 되지만, 원시 데이터 타입과 객체는 좀 다른 동작 방법을 가지고 있기 떄문에 이들을 분별하는 것은 결국엔 필요하다.
+
+
+
+
+var str = 'coding';
+str.prop = 'everybody';   // 이 라인이 실행될때도 자바스크립트 머신은 객체처럼 동작하길 원하는 사용자의 의도에 맞게 임시적으로 객체를 생성하므로 에러가 발생하지 않는다.
+console.log(str.prop);    // undefined
+// ⬆️ str.prop를 하는 순간에 자바스크립트 내부적으로 String 객체가 만들어진다. prop 프로퍼티는 이 객체에 저장되고 이 객체는 곧 제거된다. 그렇기 때문에 prop라는 속성이 저장된 객체는 존재하지 않게된다. 이러한 특징은 일반적인 객체의 동작 방법과는 다르다.
+
+// 하지만 문자열과 관련해서 필요한 기능성을 객체지향적으로 제공해야 하는 필요 또한 있기 때문에 원시 데이터 형을 객체처럼 다룰 수 있도록 하기 위한 객체를 자바스크립트 제공하고 있는데 그것이 레퍼객체(wrapper.object)이다.
+
+/**
+ * 숫자 - Number
+ * 문자열 - String
+ * 불리언 - Boolean
+ * null - x
+ * undefined - x
+ */
+
+
+
+
+// ---------------------------------<< 참조 >>----------------------------------------
+// < 복제 >
+// 전자화된 시스템의 가장 중요한 특징은 복제다. 현실의 사물과 다르게 전자화된 시스템 위의 데이터를 복제 하는데는 비용이 거의 들지 않는다. 바로 이러한 특징이 소프트웨어를 기존의 산업과 구분하는 가장 큰 특징일 것이다.
+var a = 1;
+var b = a;
+b = 2;
+console.log(a);   // 1
+
+// 위의 예제는 원시데이터타입이고, 아래의 예제는 객체데이터 타입이다.
+
+// < 참조 >
+var a = {'id':1};
+var b = a;
+b.id = 2;
+console.log(a.id);  // 2
+
+var a = {'id':1};
+var b = a;
+b = {'id': 2};
+console.log(a.id);  // 1
+
+
+// var a = {'id': 1}; 이라는 코드를 작성하면 객체가 생성되고, b로도 그 객체를 참조한다. 원시데이터 타입은 var b = a; 와 같이 할당하는 순간 a의 값과 같은 데이터를 복제하지만,
+// 객체데이터타입에서 var b = a; 처럼 할당하면 a 가 생성한 객체를 b도 참조하는 것이다. 따라서 b를 이용해 객체를 변경하면 a가 참조하는 객체 자체가 변경된것이므로 a로 참조했을때 그 값이 변경된다.
+
+// 아래의 예제는 원시 데이터 타입을 인자로 넘겼을 때의 동작 모습이다.
+var a = 1;
+function func(b){   // b = a  이순간 b에 a 의 데이터 타입을 복제한다.
+    b = 2;          // b = 2
+}                   // a = 1  b의 값을 변경해도 a의값에는 영향이 없다.
+func(a);
+console.log(a);  // 1
+
+// 아래의 예제는 참조 데이터 타입을 인자로 넘겼을 때의 동작 모습이다.
+var a = {'id': 1};  
+function func(b) {     // b = a
+    b = {'id': 2};     // b = {'id':2}; b는 새로운 객체를 생성한 것이다.
+}                      // a 가 참조하는 값에는 영향을 주지 않는다.
+func(a);
+console.log(a.id);  // 1
+
+
+// 새로운 객체를 생성하는 것이 아니라, a가 만들어낸 객체 자체의 값이 변경된다.
+var a = {'id': 1};
+function func(b) {     // b = a
+    b.id = 2;          // b.id = 2; 인 순간 객체 자체의 값이 변경된다.
+}                      // a 가 참조하는 객체의 값 또한 변경된다.
+func(a);         
+console.log(a.id);  // 2

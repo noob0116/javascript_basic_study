@@ -1,7 +1,6 @@
-var arr = new Array('seoul', 'new york', 'ladarkh', 'pusan', 'Tsukuba');
-function getRandomValueFromArray(arr) {
-    var index = Math.floor(arr.length * Math.random());
-    return arr[index];
+var a = {'id': 1};
+function func(b) {
+    b.id = 2;
 }
-
-console.log(getRandomValueFromArray(arr));
+func(a);
+console.log(a.id);
